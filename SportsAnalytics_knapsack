@@ -1,0 +1,111 @@
+class Athlete {
+
+    int athleteId;
+    String athleteName;
+    int trainingHours;
+    int performanceScore;
+
+    Athlete(int athleteId, String athleteName,
+            int trainingHours, int performanceScore) {
+
+        this.athleteId = athleteId;
+        this.athleteName = athleteName;
+        this.trainingHours = trainingHours;
+        this.performanceScore = performanceScore;
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("===== SportsAnalytics System =====");
+
+        System.out.print("\nEnter Number of Athletes: ");
+        int n = sc.nextInt();
+
+        Athlete[] athletes = new Athlete[n];
+
+        for (int i = 0; i < n; i++) {
+
+            System.out.println("\nAthlete " + (i + 1));
+
+            System.out.print("Enter Athlete ID: ");
+            int id = sc.nextInt();
+
+            sc.nextLine();
+
+            System.out.print("Enter Athlete Name: ");
+            String name = sc.nextLine();
+
+            System.out.print("Enter Training Hours Required: ");
+            int training = sc.nextInt();
+
+            System.out.print("Enter Performance Score: ");
+            int score = sc.nextInt();
+
+            athletes[i] =
+                new Athlete(id, name, training, score);
+        }
+
+        System.out.print(
+            "\nEnter Maximum Training Capacity: "
+        );
+
+        int capacity = sc.nextInt();
+
+        int[][] dp = new int[n + 1][capacity + 1];
+
+        for (int i = 1; i <= n; i++) {
+
+            for (int w = 0; w <= capacity; w++) {
+
+                if (athletes[i - 1].trainingHours <= w) {
+
+                    dp[i][w] = Math.max(
+                        athletes[i - 1].performanceScore
+                        + dp[i - 1][w -
+                        athletes[i - 1].trainingHours],
+
+                        dp[i - 1][w]
+                    );
+                }
+
+                else {
+
+                    dp[i][w] = dp[i - 1][w];
+                }
+            }
+        }
+
+        System.out.println(
+            "\nMaximum Team Performance Score = "
+            + dp[n][capacity]
+        );
+
+        System.out.println("\nSelected Athletes:");
+
+        int w = capacity;
+
+        for (int i = n; i > 0; i--) {
+
+            if (dp[i][w] != dp[i - 1][w]) {
+
+                System.out.println(
+                    athletes[i - 1].athleteId + "  "
+                    + athletes[i - 1].athleteName
+                    + "  Training="
+                    + athletes[i - 1].trainingHours
+                    + "  Score="
+                    + athletes[i - 1].performanceScore
+                );
+
+                w -= athletes[i - 1].trainingHours;
+            }
+        }
+
+        sc.close();
+    }
+}
